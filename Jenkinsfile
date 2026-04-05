@@ -40,6 +40,7 @@ pipeline {
                     usernameVariable: 'ACR_USER',
                     passwordVariable: 'ACR_PASS'
                 )]) {
+
                     sh """
                     echo \$ACR_PASS | docker login ${ACR_LOGIN_SERVER} -u \$ACR_USER --password-stdin
                     """
@@ -59,7 +60,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to Azure Container Instances') {
+        stage('Deploy Multi-Container ACI using YAML') {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'acr-techstore-cred',
@@ -68,6 +69,8 @@ pipeline {
                 )]) {
 
                     sh """
+                    sed -i 's/PASSWORD_PLACEHOLDER/'"\$ACR_PASS"'/g' aci-deployment.yaml
+
                     az container delete \
                     --resource-group ${RESOURCE_GROUP} \
                     --name ${CONTAINER_GROUP} \
@@ -75,18 +78,7 @@ pipeline {
 
                     az container create \
                     --resource-group ${RESOURCE_GROUP} \
-                    --name ${CONTAINER_GROUP} \
-                    --image ${ACR_LOGIN_SERVER}/frontend:${IMAGE_TAG} \
-                    --image ${ACR_LOGIN_SERVER}/backend:${IMAGE_TAG} \
-                    --registry-login-server ${ACR_LOGIN_SERVER} \
-                    --registry-username \$ACR_USER \
-                    --registry-password \$ACR_PASS \
-                    --dns-name-label ${DNS_NAME} \
-                    --ports 80 \
-                    --ip-address Public \
-                    --os-type Linux \
-                    --cpu 1 \
-                    --memory 2
+                    --file aci-deployment.yaml
                     """
                 }
             }

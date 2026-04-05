@@ -1,0 +1,41 @@
+apiVersion: 2021-10-01
+location: centralindia
+name: techstore-group
+properties:
+  containers:
+
+  - name: frontend
+    properties:
+      image: acrtechstorenilu.azurecr.io/frontend:latest
+      ports:
+      - port: 80
+      resources:
+        requests:
+          cpu: 1
+          memoryInGB: 1
+
+  - name: backend
+    properties:
+      image: acrtechstorenilu.azurecr.io/backend:latest
+      ports:
+      - port: 5000
+      resources:
+        requests:
+          cpu: 1
+          memoryInGB: 1
+
+  imageRegistryCredentials:
+  - server: acrtechstorenilu.azurecr.io
+    username: acrtechstorenilu
+    password: 4ksJQE4KLpFOY8ScorInPDh2HonpVy6eoNCaeDEoLpneRJwjf2RbJQQJ99CDACGhslBEqg7NAAACAZCRZVrd
+
+  osType: Linux
+
+  ipAddress:
+    type: Public
+    dnsNameLabel: techstore-nilu-demo
+    ports:
+    - protocol: TCP
+      port: 80
+
+type: Microsoft.ContainerInstance/containerGroups
