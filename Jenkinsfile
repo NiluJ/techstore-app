@@ -83,7 +83,8 @@ pipeline {
                     --registry-password \$ACR_PASS \
                     --dns-name-label ${DNS_NAME} \
                     --ports 80 \
-                    --ip-address Public
+                    --ip-address Public \
+                    --os-type Linux
                     """
                 }
             }
